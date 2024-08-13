@@ -1,0 +1,4 @@
+pkgs = ["neofetch"]
+container_name = "my-ubuntu"
+distro = "ubuntu"
+default = true
