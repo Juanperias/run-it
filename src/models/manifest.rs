@@ -6,4 +6,5 @@ pub struct Manifest {
     pub container_name: String,
     pub distro: String,
     pub default: bool,
+    pub shell_hook: Option<Vec<String>>,
 }

@@ -3,6 +3,7 @@ use std::{fs, path::Path};
 
 use crate::commands::{create::create_container, install::install_command};
 use crate::models::manifest::Manifest;
+use crate::podman;
 
 pub fn apply_command(file: String) -> Result<()> {
     let path = Path::new(&file);
@@ -21,8 +22,14 @@ pub fn apply_command(file: String) -> Result<()> {
         parsed_manifest.default,
     )?;
 
+    let commands = parsed_manifest.shell_hook.unwrap();
+
     for pkg in parsed_manifest.pkgs {
         install_command(pkg, Some(parsed_manifest.container_name.clone()))?;
+    }
+
+    for command in commands {
+        podman::exec::exec_container(command, parsed_manifest.container_name.clone())?;
     }
 
     println!("Manifest executed!");
