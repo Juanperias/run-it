@@ -1,0 +1,5 @@
+container_name = "my-arch"
+distro = "archlinux"
+default = true
+pkgs = ["neofetch", "fastfetch"]
+shell_hook = ["echo bye bye"]

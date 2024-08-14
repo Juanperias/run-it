@@ -17,23 +17,26 @@ pub fn create_container(name: String, distro: String, use_default: bool) -> Resu
 
     println!("Creating your container... this can take some minutes");
     let image = format!("docker.io/{}", &distro);
-    podman::container::create(container.name.clone(), image)?;
-    println!("Updating the container");
-    podman::start::start_container(container.name.clone())?;
-    let command =
-        get_package_manager(config.clone(), distro.clone(), PackageManagerAction::Update)?;
-    println!("{}", command);
-    podman::exec::exec_container(command, container.name.clone())?;
 
-    println!("Your container is created");
+    if let Ok(_) = podman::container::create(container.name.clone(), image) {
+        println!("Updating the container");
+        podman::start::start_container(container.name.clone())?;
+        let command =
+            get_package_manager(config.clone(), distro.clone(), PackageManagerAction::Update)?;
+        podman::exec::exec_container(command, container.name.clone())?;
 
-    config.containers.push(container.clone());
+        println!("Your container is created");
 
-    if use_default {
-        config.default_container = container.clone();
+        config.containers.push(container.clone());
+
+        if use_default {
+            config.default_container = container.clone();
+        }
+
+        write_config(config)?;
+    } else {
+        println!("this container has already been created!");
     }
-
-    write_config(config)?;
 
     Ok(())
 }
